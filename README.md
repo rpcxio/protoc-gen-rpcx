@@ -1,7 +1,7 @@
 
 ## Installation
 
-- To use this software, you must install `protoc` compiler:
+- To use this software, you must install `protoc` compiler: [protobuf](https://github.com/protocolbuffers/protobuf)
 
 - Add rpcx plugin into protoc-gen-go:
 
