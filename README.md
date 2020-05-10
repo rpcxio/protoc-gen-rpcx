@@ -40,7 +40,7 @@ export PATH=$PATH:$GOPATH/bin
 protoc -I.:${GOPATH}/src  --go_out=plugins=rpcx:. *.proto
 ```
 
-# 例子
+## 例子
 
 - proto文件
 
