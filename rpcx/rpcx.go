@@ -119,6 +119,30 @@ func (p *rpcx) generateService(file *generator.FileDescriptor, service *pb.Servi
 	for _, method := range service.Method {
 		p.generateClientCode(service, method)
 	}
+
+	// one client
+	p.P()
+	p.P("//================== oneclient stub===================")
+	p.P(fmt.Sprintf(`// %[1]sOneClient is a client wrapped oneClient.
+		type %[1]sOneClient struct{
+			serviceName string
+			oneclient client.OneClient
+		}
+
+		// New%[1]sOneClient wraps a OneClient as %[1]sOneClient.
+		// You can pass a shared OneClient object created by NewOneClientFor%[1]s.
+		func New%[1]sOneClient(oneclient client.OneClient) *%[1]sOneClient {
+			return &%[1]sOneClient{
+				serviceName: "%[1]s",
+				oneclient: oneclient,
+			}
+		}
+
+		// ======================================================
+	`, serviceName))
+	for _, method := range service.Method {
+		p.generateOneClientCode(service, method)
+	}
 }
 
 func (p *rpcx) generateServerCode(service *pb.ServiceDescriptorProto, method *pb.MethodDescriptorProto) {
@@ -147,6 +171,20 @@ func (p *rpcx) generateClientCode(service *pb.ServiceDescriptorProto, method *pb
 		func (c *%sClient) %s(ctx context.Context, args *%s)(reply *%s, err error){
 			reply = &%s{}
 			err = c.xclient.Call(ctx,"%s",args, reply)
+			return reply, err
+		}
+	`, methodName, serviceName, methodName, inType, outType, outType, method.GetName()))
+}
+
+func (p *rpcx) generateOneClientCode(service *pb.ServiceDescriptorProto, method *pb.MethodDescriptorProto) {
+	methodName := upperFirstLatter(method.GetName())
+	serviceName := upperFirstLatter(service.GetName())
+	inType := p.typeName(method.GetInputType())
+	outType := p.typeName(method.GetOutputType())
+	p.P(fmt.Sprintf(`// %s is client rpc method as defined
+		func (c *%sOneClient) %s(ctx context.Context, args *%s)(reply *%s, err error){
+			reply = &%s{}
+			err = c.oneclient.Call(ctx,c.serviceName,"%s",args, reply)
 			return reply, err
 		}
 	`, methodName, serviceName, methodName, inType, outType, outType, method.GetName()))
