@@ -118,13 +118,18 @@ func (p *rpcx) generateService(file *generator.FileDescriptor, service *pb.Servi
 
 		// NewXClientFor%[1]s creates a XClient.
 		// You can configure this client with more options such as etcd registry, serialize type, select algorithm and fail mode.
-		func NewXClientFor%[1]s(addr string) client.XClient {
-			d, _ := client.NewPeer2PeerDiscovery("tcp@"+addr, "")
+		func NewXClientFor%[1]s(addr string) (client.XClient, error) {
+			d, err := client.NewPeer2PeerDiscovery("tcp@"+addr, "")
+			if err != nil {
+				return nil, err
+			}
+			
 			opt := client.DefaultOption
 			opt.SerializeType = protocol.ProtoBuffer
 
 			xclient := client.NewXClient("%[1]s", client.Failtry, client.RoundRobin, d, opt)
-			return xclient
+
+			return xclient,nil
 		}
 	`, serviceName))
 	for _, method := range service.Method {
