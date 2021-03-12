@@ -22,12 +22,12 @@ type rpcx struct {
 	gen *generator.Generator
 }
 
-//Name returns the name of this plugin
+// Name returns the name of this plugin
 func (p *rpcx) Name() string {
 	return "rpcx"
 }
 
-//Init initializes the plugin.
+// Init initializes the plugin.
 func (p *rpcx) Init(gen *generator.Generator) {
 	p.gen = gen
 }
@@ -119,7 +119,7 @@ func (p *rpcx) generateService(file *generator.FileDescriptor, service *pb.Servi
 		// NewXClientFor%[1]s creates a XClient.
 		// You can configure this client with more options such as etcd registry, serialize type, select algorithm and fail mode.
 		func NewXClientFor%[1]s(addr string) client.XClient {
-			d := client.NewPeer2PeerDiscovery("tcp@"+addr, "")
+			d, _ := client.NewPeer2PeerDiscovery("tcp@"+addr, "")
 			opt := client.DefaultOption
 			opt.SerializeType = protocol.ProtoBuffer
 
