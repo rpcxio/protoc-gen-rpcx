@@ -142,12 +142,12 @@ func (p *rpcx) generateService(file *generator.FileDescriptor, service *pb.Servi
 	p.P(fmt.Sprintf(`// %[1]sOneClient is a client wrapped oneClient.
 		type %[1]sOneClient struct{
 			serviceName string
-			oneclient client.OneClient
+			oneclient *client.OneClient
 		}
 
 		// New%[1]sOneClient wraps a OneClient as %[1]sOneClient.
 		// You can pass a shared OneClient object created by NewOneClientFor%[1]s.
-		func New%[1]sOneClient(oneclient client.OneClient) *%[1]sOneClient {
+		func New%[1]sOneClient(oneclient *client.OneClient) *%[1]sOneClient {
 			return &%[1]sOneClient{
 				serviceName: "%[1]s",
 				oneclient: oneclient,
