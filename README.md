@@ -5,39 +5,24 @@
 
 `protoc`负责将proto文件编译成不同编程语言的代码，一般通过插件的方式实现。
 
-- 编译rpcx插件:
-
-Google提供了go和grpc的`protoc`插件，但是依照官方的解释，不准备将其做成库的方式，所以我们要实现自己的插件的话，需要一点点小技巧。
-
-首先下载`github.com/golang/protobuf`,切换到`v1.3.5`分支。 `v1.4.0`以上的分支是基于protobuf APIV2实现的，目前还在开发之中，所以我们还是采用常用的稳定的版本。
-
-然后把本项目下的`link_rpcx.go`文件和`rpcx`文件夹复制到`protoc-gen-go`文件夹下。
-
-最后我们编译`protoc-gen-go`插件，安装的PATH里的文件夹下。
-这个插件除了将proto文件编译成protobuf的Go文件，还包含`grpc`插件和`rpcx`插件。
-
-具体操作步骤可以参考下面的操作：
+- 安装protoc-gen-go插件或protoc-gen-gofast插件，任选其一即可。
 
 ```sh
-export GO111MODULE=off
-
-go get github.com/golang/protobuf/{proto,protoc-gen-go}
-go get github.com/rpcxio/protoc-gen-rpcx
-
-export GOPATH="$(go env GOPATH)"
-
-export GIT_TAG="v1.3.5" 
-git -C $GOPATH/src/github.com/golang/protobuf checkout $GIT_TAG
-
-cd $GOPATH/src/github.com/golang/protobuf/protoc-gen-go &&  cp -r $GOPATH/src/github.com/rpcxio/protoc-gen-rpcx/{link_rpcx.go, rpcx} .
-go install github.com/golang/protobuf/protoc-gen-go
-
-export PATH=$PATH:$GOPATH/bin
+go install github.com/rpcxio/protoc-gen-go@latest
+go install github.com/gogo/protobuf/protoc-gen-gofast@latest
 ```
 
-如果你到达了这一步，恭喜你，包含rpcx插件的protoc-gen-go你就编译安装成功了，按照下面的命令你就可以将proto中定义的service编译成rpcx的服务和客户端代码了:
+- 编译rpcx插件:
+
 ```sh
-protoc -I.:${GOPATH}/src  --go_out=plugins=rpcx:. *.proto
+go install github.com/rpcxio/protoc-gen-rpcx@latest
+```
+
+如果你到达了这一步，恭喜你，插件安装成功了，按照下面的命令你就可以将proto中定义的service编译成rpcx的服务和客户端代码了:
+```sh
+protoc -I. -I${GOPATH}/src \
+  --gofast_out=. --gofast_opt=paths=source_relative \
+  --rpcx_out=. --rpcx_opt=paths=source_relative *.proto
 ```
 
 ## 例子
@@ -49,7 +34,7 @@ protoc -I.:${GOPATH}/src  --go_out=plugins=rpcx:. *.proto
 ```proto
 syntax = "proto3";
 
-option go_package = "helloword";
+option go_package = "github.com/rpcxio/protoc-gen-rpcx/testdata/rpcx/helloworld";
 
 package helloworld;
 
@@ -73,10 +58,13 @@ message HelloReply {
 - 使用protoc编译器编译出Go代码
 
 ```sh
-protoc --go_out=plugins=rpcx:. helloworld.proto
+protoc -I. -I${GOPATH}/src \
+  --gofast_out=. --gofast_opt=paths=source_relative \
+  --rpcx_out=. --rpcx_opt=paths=source_relative helloworld.proto
 ```
 
-上述命令生成了 `helloworld.pb.go` 文件， 它包含各种struct的定义， 还有服务端的一个骨架， 以及客户端的代码。
+上述命令生成了 `helloworld.pb.go` 与 `helloworld.rpcx.pb.go` 两个文件。 `helloworld.pb.go` 文件是由protoc-gen-gofast插件生成的，
+当然你也可以选择官方的protoc-gen-go插件来生成。 `helloworld.rpcx.pb.go` 是由protoc-gen-rpcx插件生成的，它包含服务端的一个骨架， 以及客户端的代码。
 
 - 服务端代码
 
@@ -91,7 +79,7 @@ import (
 	context "context"
 	"fmt"
 
-	helloworld "github.com/golang/protobuf/protoc-gen-go/testdata/rpcx"
+	helloworld "github.com/rpcxio/protoc-gen-rpcx/testdata/rpcx"
 	server "github.com/smallnest/rpcx/server"
 )
 
@@ -129,7 +117,7 @@ import (
 	"context"
 	"fmt"
 
-	helloworld "github.com/golang/protobuf/protoc-gen-go/testdata/rpcx"
+	helloworld "github.com/rpcxio/protoc-gen-rpcx/testdata/rpcx"
 )
 
 func main() {

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "helloword";
+option go_package = "github.com/rpcxio/protoc-gen-rpcx/testdata/rpcx/helloworld";
 
 package helloworld;
 
