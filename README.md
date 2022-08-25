@@ -5,11 +5,13 @@
 
 `protoc`负责将proto文件编译成不同编程语言的代码，一般通过插件的方式实现。
 
-- 安装protoc-gen-go插件或protoc-gen-gofast插件，任选其一即可。
+- 安装golang官方protoc-gen-go插件或gogo protoc-gen-gofast插件，任选其一即可。
 
 ```sh
-go install github.com/rpcxio/protoc-gen-go@latest
-go install github.com/gogo/protobuf/protoc-gen-gofast@latest
+go install github.com/golang/protobuf/protoc-gen-go@latest // 支持标准库
+go install github.com/gogo/protobuf/protoc-gen-gofast@latest // 支持gogo gofast
+
+go install github.com/rpcxio/protoc-gen-go@latest // 本插件
 ```
 
 - 编译rpcx插件:
@@ -19,6 +21,15 @@ go install github.com/rpcxio/protoc-gen-rpcx@latest
 ```
 
 如果你到达了这一步，恭喜你，插件安装成功了，按照下面的命令你就可以将proto中定义的service编译成rpcx的服务和客户端代码了:
+
+protobuf官方库(如果未设置GOPATH,请去掉`-I${GOPATH}/src`或者设置GOPAH)：
+```sh
+protoc -I. -I${GOPATH}/src \
+   --go_out=. \
+  --rpcx_out=. --rpcx_opt=paths=source_relative helloworld.proto
+```
+
+gogo库(如果未设置GOPATH,请去掉`-I${GOPATH}/src`或者设置GOPAH)：
 ```sh
 protoc -I. -I${GOPATH}/src \
   --gofast_out=. --gofast_opt=paths=source_relative \
