@@ -57,7 +57,7 @@ func generateFileContent(gen *protogen.Plugin, file *protogen.File, g *protogen.
 
 	g.P("// Reference imports to suppress errors if they are not otherwise used.")
 	g.P("var _ = ", contextPackage.Ident("TODO"))
-	g.P("var _ = ", rpcxServerPackage.Ident("NewServer"))
+	// g.P("var _ = ", rpcxServerPackage.Ident("NewServer"))
 	g.P("var _ = ", rpcxClientPackage.Ident("NewClient"))
 	g.P("var _ = ", rpcxProtocolPackage.Ident("NewMessage"))
 	g.P()
