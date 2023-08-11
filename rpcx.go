@@ -57,7 +57,7 @@ func generateFileContent(gen *protogen.Plugin, file *protogen.File, g *protogen.
 
 	g.P("// Reference imports to suppress errors if they are not otherwise used.")
 	g.P("var _ = ", contextPackage.Ident("TODO"))
-	g.P("var _ = ", rpcxServerPackage.Ident("NewServer"))
+	// g.P("var _ = ", rpcxServerPackage.Ident("NewServer"))
 	g.P("var _ = ", rpcxClientPackage.Ident("NewClient"))
 	g.P("var _ = ", rpcxProtocolPackage.Ident("NewMessage"))
 	g.P()
@@ -79,23 +79,23 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 	}
 	g.P(fmt.Sprintf(`}`))
 
-	g.P()
-	g.P("//================== server skeleton ===================")
-	g.P(fmt.Sprintf(`type %[1]sImpl struct {}
+	// g.P()
+	// g.P("//================== server skeleton ===================")
+	// g.P(fmt.Sprintf(`type %[1]sImpl struct {}
 
-		// ServeFor%[1]s starts a server only registers one service.
-		// You can register more services and only start one server.
-		// It blocks until the application exits.
-		func ServeFor%[1]s(addr string) error{
-			s := server.NewServer()
-			s.RegisterName("%[1]s", new(%[1]sImpl), "")
-			return s.Serve("tcp", addr)
-		}
-	`, serviceName))
-	g.P()
-	for _, method := range service.Methods {
-		generateServerCode(g, service, method)
-	}
+	// 	// ServeFor%[1]s starts a server only registers one service.
+	// 	// You can register more services and only start one server.
+	// 	// It blocks until the application exits.
+	// 	func ServeFor%[1]s(addr string) error{
+	// 		s := server.NewServer()
+	// 		s.RegisterName("%[1]s", new(%[1]sImpl), "")
+	// 		return s.Serve("tcp", addr)
+	// 	}
+	// `, serviceName))
+	// g.P()
+	// for _, method := range service.Methods {
+	// 	generateServerCode(g, service, method)
+	// }
 
 	g.P()
 	g.P("//================== client stub ===================")
